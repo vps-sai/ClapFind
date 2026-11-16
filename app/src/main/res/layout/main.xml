@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ClapFind"
+            android:textColor="@color/brand"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Clap 3 times or whistle, and your phone rings."
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:gravity="center"
+            android:text="Off"
+            android:textColor="#212121"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <ProgressBar
+            android:id="@+id/meter"
+            style="@android:style/Widget.Material.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:max="100" />
+
+        <Button
+            android:id="@+id/toggle"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginTop="16dp"
+            android:text="Turn on"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/ring"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:text="Test ring" />
+
+        <Button
+            android:id="@+id/help"
+            style="@android:style/Widget.Material.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:text="Help: how to use ClapFind" />
+
+        <Switch
+            android:id="@+id/swClap"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:text="Respond to 3 claps"
+            android:textSize="16sp" />
+
+        <Switch
+            android:id="@+id/swWhistle"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Respond to a long whistle"
+            android:textSize="16sp" />
+
+        <Switch
+            android:id="@+id/swWifi"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Listen only while on Wi-Fi (home)"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Sensitivity (low → high)"
+            android:textSize="16sp" />
+
+        <SeekBar
+            android:id="@+id/sens"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:max="100" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:lineSpacingExtra="3dp"
+            android:text="Privacy: this app has no internet permission, so nothing can leave your phone. Sound is analysed in memory for loudness and pitch only. Nothing is recorded, saved or shared. No ads, no accounts, no tracking."
+            android:textColor="#616161"
+            android:textSize="13sp" />
+    </LinearLayout>
+</ScrollView>
