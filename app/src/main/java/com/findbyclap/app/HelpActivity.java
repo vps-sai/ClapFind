@@ -29,6 +29,12 @@ public class HelpActivity extends Activity {
             "Unlock the phone, or tap Stop ringing in the notification. "
                     + "If you do nothing, it stops by itself after 45 seconds and starts listening again.",
 
+            "Choosing the alarm sound",
+            "Tap Alarm sound on the main screen. You can keep your phone's own alarm sound, pick one of "
+                    + "the built-in sounds (bird chirping, cuckoo, siren, loud beeps), or choose any ringtone "
+                    + "already on your phone. Tap Test ring to hear your choice. For a phone that may be "
+                    + "under cushions or in another room, Siren and Loud beeps carry the furthest.",
+
             "After restarting your phone",
             "Android does not allow any app to switch the microphone on by itself. After a restart, "
                     + "ClapFind shows a reminder. Tap it, or open the app once, and listening comes back on.",

@@ -17,6 +17,7 @@ import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
+import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.media.RingtoneManager;
@@ -71,6 +72,7 @@ public class ListenService extends Service {
     private BroadcastReceiver unlockReceiver;
 
     private MediaPlayer player;
+    private AudioTrack synthTrack;
     private int savedAlarmVolume = -1;
     private String torchId;
     private boolean torchOn;
@@ -367,29 +369,64 @@ public class ListenService extends Service {
         } catch (RuntimeException ignored) {
         }
 
-        Uri[] sounds = {
-                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM),
-                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE),
-                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        };
-        for (Uri sound : sounds) {
-            if (sound == null) {
-                continue;
-            }
-            MediaPlayer mp = new MediaPlayer();
+        AudioAttributes alarmAttrs = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        String choice = getSharedPreferences(PREFS, MODE_PRIVATE).getString("sound", "default");
+
+        if (ToneSynth.isBuiltIn(choice)) {
             try {
-                mp.setAudioAttributes(new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ALARM)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .build());
-                mp.setDataSource(this, sound);
-                mp.setLooping(true);
-                mp.prepare();
-                mp.start();
-                player = mp;
-                break;
-            } catch (Exception e) {
-                mp.release();
+                short[] pcm = ToneSynth.make(choice);
+                AudioTrack t = new AudioTrack.Builder()
+                        .setAudioAttributes(alarmAttrs)
+                        .setAudioFormat(new AudioFormat.Builder()
+                                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                                .setSampleRate(ToneSynth.RATE)
+                                .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                                .build())
+                        .setTransferMode(AudioTrack.MODE_STATIC)
+                        .setBufferSizeInBytes(pcm.length * 2)
+                        .build();
+                t.write(pcm, 0, pcm.length);
+                t.setLoopPoints(0, pcm.length, -1);
+                t.play();
+                synthTrack = t;
+            } catch (RuntimeException e) {
+                synthTrack = null;
+            }
+        }
+
+        if (synthTrack == null) {
+            Uri chosen = null;
+            if (choice.startsWith("uri:")) {
+                try {
+                    chosen = Uri.parse(choice.substring(4));
+                } catch (RuntimeException ignored) {
+                }
+            }
+            Uri[] sounds = {
+                    chosen,
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM),
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE),
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            };
+            for (Uri sound : sounds) {
+                if (sound == null) {
+                    continue;
+                }
+                MediaPlayer mp = new MediaPlayer();
+                try {
+                    mp.setAudioAttributes(alarmAttrs);
+                    mp.setDataSource(this, sound);
+                    mp.setLooping(true);
+                    mp.prepare();
+                    mp.start();
+                    player = mp;
+                    break;
+                } catch (Exception e) {
+                    mp.release();
+                }
             }
         }
 
@@ -421,6 +458,14 @@ public class ListenService extends Service {
         main.removeCallbacks(torchBlink);
         setTorch(false);
 
+        if (synthTrack != null) {
+            try {
+                synthTrack.stop();
+            } catch (RuntimeException ignored) {
+            }
+            synthTrack.release();
+            synthTrack = null;
+        }
         if (player != null) {
             try {
                 player.stop();
