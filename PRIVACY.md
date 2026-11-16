@@ -15,7 +15,7 @@ ClapFind uses the microphone, including while the app is closed or the screen is
 ## What the app does not do
 
 - No personal data is collected, stored or shared.
-- No internet access, accounts, advertising, analytics or tracking.
+- No internet access, sign-in, accounts, advertising, analytics or tracking.
 - No location, contacts, photos or files are accessed.
 
 ## What is stored on your phone

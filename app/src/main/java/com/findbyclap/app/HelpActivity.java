@@ -77,7 +77,7 @@ public class HelpActivity extends Activity {
             "Your privacy",
             "ClapFind has no internet permission, so nothing can leave your phone. Sound is checked "
                     + "in memory for loudness and pitch only, then discarded. Nothing is recorded, saved "
-                    + "or shared. There are no ads, no accounts and no tracking."
+                    + "or shared. There are no ads, no sign-in and no tracking."
     };
 
     @Override

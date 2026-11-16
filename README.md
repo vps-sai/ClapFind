@@ -1,7 +1,7 @@
 # ClapFind
 
 Clap three times or whistle, and your Android phone rings, vibrates and flashes its torch.
-Free, no ads, no data collection. The app has no internet permission.
+Free, no ads, no sign-in, no data collection. The app has no internet permission.
 
 ## Get the installable APK (no tools needed on your computer)
 

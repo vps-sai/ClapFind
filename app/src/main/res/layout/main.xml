@@ -129,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:lineSpacingExtra="3dp"
-            android:text="Privacy: this app has no internet permission, so nothing can leave your phone. Sound is analysed in memory for loudness and pitch only. Nothing is recorded, saved or shared. No ads, no accounts, no tracking."
+            android:text="Privacy: this app has no internet permission, so nothing can leave your phone. Sound is analysed in memory for loudness and pitch only. Nothing is recorded, saved or shared. No ads, no sign-in, no tracking."
             android:textColor="#616161"
             android:textSize="13sp" />
     </LinearLayout>
