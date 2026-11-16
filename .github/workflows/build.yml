@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v5
@@ -19,16 +21,36 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.13'
-      - name: Build debug APK
-        run: gradle assembleDebug --no-daemon
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ClapFind-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
-      - name: Publish APK as a direct download
+
+      - name: Prepare signing key (only if the secrets have been added)
         env:
-          GH_TOKEN: ${{ github.token }}
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            echo "KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build test APK
+        run: gradle assembleDebug --no-daemon
+
+      - name: Publish test APK
         run: |
           cp app/build/outputs/apk/debug/app-debug.apk ClapFind-test.apk
           gh release view test-build >/dev/null 2>&1 || gh release create test-build --prerelease --title "ClapFind test build" --notes "Latest test build for trying on your own phone. Not the Play Store version."
           gh release upload test-build ClapFind-test.apk --clobber
+
+      - name: Build signed release (APK to share, AAB for Google Play)
+        if: env.KEYSTORE_FILE != ''
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: gradle assembleRelease bundleRelease --no-daemon
+
+      - name: Publish signed release
+        if: env.KEYSTORE_FILE != ''
+        run: |
+          VERSION=$(grep -oP "versionName '\K[^']+" app/build.gradle)
+          cp app/build/outputs/apk/release/app-release.apk ClapFind.apk
+          cp app/build/outputs/bundle/release/app-release.aab ClapFind.aab
+          gh release view "v$VERSION" >/dev/null 2>&1 || gh release create "v$VERSION" --latest --title "ClapFind $VERSION" --notes "ClapFind.apk: install directly on an Android phone. ClapFind.aab: the file to upload to Google Play."
+          gh release upload "v$VERSION" ClapFind.apk ClapFind.aab --clobber

@@ -2,6 +2,9 @@ plugins {
     id 'com.android.application'
 }
 
+// The signing key is never stored in this repository. The build server supplies it privately.
+def keystoreFile = System.getenv('KEYSTORE_FILE')
+
 android {
     namespace 'com.findbyclap.app'
     compileSdk 36
@@ -10,8 +13,8 @@ android {
         applicationId 'com.findbyclap.app'
         minSdk 26
         targetSdk 36
-        versionCode 8
-        versionName '1.7'
+        versionCode 10
+        versionName '1.0.0'
     }
 
     compileOptions {
@@ -19,9 +22,23 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
+    signingConfigs {
+        if (keystoreFile) {
+            release {
+                storeFile file(keystoreFile)
+                storePassword System.getenv('KEYSTORE_PASSWORD')
+                keyAlias 'clapfind'
+                keyPassword System.getenv('KEYSTORE_PASSWORD')
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
+            if (keystoreFile) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
